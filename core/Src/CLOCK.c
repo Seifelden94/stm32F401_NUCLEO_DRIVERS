@@ -29,7 +29,7 @@
 		/// configure the flash related setup
 
 		////Data cache enable/Instruction cache enable/Prefetch enable
-       FLASH_ACR=FLASH_ACR|DCEN_ON |  ICEN_ON  |PRFTEN_ON ;  // I do not need to cleer the bit first becaue any way I will write 1
+       FLASH_ACR=FLASH_ACR|DCEN_ON |  ICEN_ON  |PRFTEN_ON ;  // I do not need to clear the bit first becaue any way I will write 1
 
        /*
         * Bits 3:0 LATENCY: Latency
@@ -49,7 +49,7 @@
 		//////// set PPRE2 prescaller value
 		RCC_CFGR = ((RCC_CFGR ) &(~(0b111<<PPRE2_OFFST ))) |(PPRE2_VALUE<<PPRE2_OFFST ) ;
 
-		//////// set PPRE1 prescaller value
+		//////// set PPRE1 prescaler value
 		RCC_CFGR = ((RCC_CFGR ) &(~(0b111<<PPRE1_OFFST))) |(PPRE1_VALUE <<PPRE1_OFFST) ;
                                                                                                        ////   1011101
 		                                                                                             //////   11
@@ -64,7 +64,7 @@
 		RCC_PLLCFGR = (((RCC_PLLCFGR ) &(~(0b111111<<PLLM_OFFST ))) |(PLLM_VALUE <<PLLM_OFFST )) ;
 
 
-		/// choose the source cloclk for PLL
+		/// choose the source clock for PLL
 		RCC_PLLCFGR = (((RCC_PLLCFGR ) &(~(0b111111<<PLLSRC_OFFST  ))) |(PLLSRC_Choose_HSE <<PLLSRC_OFFST  )) ;
 
 		///// 6 enable PLL
@@ -76,7 +76,7 @@
 
 		RCC_CFGR = (((RCC_CFGR ) &(~(0b11<<SW_OFFSET))) |(SW_CHOOSE_PLL <<SW_OFFSET)) ;
 
-      /// check the ready flage that endicat that succsfully we choosed PLL as system  clock source
+      /// check the ready flag that indicate that successfully we choose PLL as system  clock source
 		while( !((RCC_CFGR & SWS_MASK)==SWS_PLL_USED_READY)) ;/// I should use this line
 
 

@@ -57,7 +57,7 @@ These bits represent the ratio of the CPU clock period to the Flash memory acces
 1111: Fifteen wait states*/
 
 #define LATENCY_OFFSET 0
-#define LATENCY_VALUE      0b0010     ////////////////////////////choose two wait statments, becuse this what come out when I used cubeIDE and decided the clock , this is the value I got in the congigration
+#define LATENCY_VALUE      0b0010     ////////////////////////////choose two wait statments, becuse this what come out when I used cubeIDE and decided the clock , this is the value I got in the congigration. so this is the system recommendation
 
 //////////end flash///////////
 

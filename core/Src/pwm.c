@@ -40,7 +40,7 @@ void pwm_time2_edge_intialise(void)
 	RCC_APB1ENR  = (((RCC_APB1ENR  ) &(~(0b1<<TIM2EN_OFFSET ))) |(TIM2EN_ON    <<TIM2EN_OFFSET )) ;  //enable the clock for time2
 
 
-	RCC_APB2ENR    = (((RCC_APB2ENR    ) &(~(0b1<<TIM1EN_OFFSET ))) |(TIM1EN    <<TIM1EN_OFFSET )) ;  //enable the clock for time2
+RCC_APB2ENR    = (((RCC_APB2ENR    ) &(~(0b1<<TIM1EN_OFFSET ))) |(TIM1EN    <<TIM1EN_OFFSET )) ;  //enable the clock for time1   so I can enable the output for all the timers by sitting on to MOE
 
 
 
@@ -52,28 +52,30 @@ void pwm_time2_edge_intialise(void)
 
 	 TIM2_CR1  = (((TIM2_CR1 ) &(~(0b11<<CMS_OFFSET))) |(CMS <<CMS_OFFSET)) ;/// choose edge aligned or center aligned
 
-	 TIM2_CR1  = (((TIM2_CR1 ) &(~(0b1<<DIR_OFFSET))) |(DIR <<DIR_OFFSET));      /// choose if the counter will count up counting or down counting if we use edge aligned
+	 TIM2_CR1  = (((TIM2_CR1 ) &(~(0b1<<DIR_OFFSET))) |(DIR <<DIR_OFFSET));      /// choose if the counter will count up counting or down counting if we use edge aligned becuse it will be ignored if we use center aligned
 
-///	 TIM2_CR1  = (((TIM2_CR1 ) &(~(0b1<<ARPE_OFFSET))) |(ARPE <<ARPE_OFFSET)); //  not nessesery, Auto reload preload enable
-
-
-	 TIM2_CCMR1  = (((TIM2_CCMR1 ) &(~(0b111<<OC1M_OFFSET ))) |(OC1M  <<OC1M_OFFSET ));  /// choose the mode for the edge aligned
-
-	 TIM2_CCMR1  = (((TIM2_CCMR1 ) &(~(0b111<<OC1CE_OFFSET ))) |(OC1CE  <<OC1CE_OFFSET ));  ///
+///	 TIM2_CR1  = (((TIM2_CR1 ) &(~(0b1<<ARPE_OFFSET))) |(ARPE <<ARPE_OFFSET)); //  not nessesery, Auto reload preload enable  will reload only at an over flow or if I wrote to the UG bit
 
 
+	 TIM2_CCMR1  = (((TIM2_CCMR1 ) &(~(0b111<<OC1M_OFFSET ))) |(OC1M  <<OC1M_OFFSET ));  /// choose the mode for the edge aligned  there is mode on and two and others
 
-	 // TIM2_CCMR1  = (((TIM2_CCMR1 ) &(~(0b1<<OC1PE_OFFSET ))) |(OC1PE  <<OC1PE_OFFSET ));    /////   not nessesery, Output compare 1 preload enable
+	 TIM2_CCMR1  = (((TIM2_CCMR1 ) &(~(0b111<<OC1CE_OFFSET ))) |(OC1CE  <<OC1CE_OFFSET ));  ///  //// it is very imporatant to make it 0 otherwise OC1Ref is cleared as soon as a High level
+                                                                                                //// is detected on ETRF input which caused the pwm to always be 0
+
+
+
+	 // TIM2_CCMR1  = (((TIM2_CCMR1 ) &(~(0b1<<OC1PE_OFFSET ))) |(OC1PE  <<OC1PE_OFFSET ));    /////   not nessesery, Output compare 1 preload enable   will reload only at an over flow or if I wrote to the UG bit
 
 	 TIM2_CCER  = (((TIM2_CCER) &(~(0b1<<CC1E_OFFSET ))) |(CC1E<<CC1E_OFFSET ));  ////////Capture/Compare 1 output enable.
 		TIM2_CCER  = (((TIM2_CCER ) &(~(0b1<<CC1P_OFFSET ))) |(CC1P <<CC1P_OFFSET ));    /////// Capture/Compare 1 output Polarity
 
 
-		TIM1_BDTR  = (((TIM1_BDTR ) &(~(0b1<<MOE_OFFSET ))) |(MOE <<MOE_OFFSET  ));  ////Main output enable
 
-		TIM2_BDTR  = (((TIM2_BDTR ) &(~(0b1<<MOE_OFFSET ))) |(MOE <<MOE_OFFSET  ));  ////Main output enable
+		TIM1_BDTR  = (((TIM1_BDTR ) &(~(0b1<<MOE_OFFSET ))) |(MOE <<MOE_OFFSET  ));  ////Main output enable I think this is responsable for the other timers too
 
-        *GPIOa.AFRL=(((*GPIOa.AFRL ) &(~(0b1111<<0 ))) |(0b0001 <<0  )); /// time chanel 1 is PA0 and AF01
+	//	TIM2_BDTR  = (((TIM2_BDTR ) &(~(0b1<<MOE_OFFSET ))) |(MOE <<MOE_OFFSET  ));  ////Main output enable
+
+        *GPIOa.AFRL=(((*GPIOa.AFRL ) &(~(0b1111<<0 ))) |(0b0001 <<0  )); /// time chanel 1 is PA0 and AF01 choose the alternate function pwm for PA0
 
 
 	 /*
@@ -108,8 +110,9 @@ void pwm_frequency_deuty_edge(int dutey, int frequency)
 	 ARR= (TIME2_F_HZ/(frequency))-1  ; //Period =(1+ARR)*CLOCK Period
 	 TIM2_ARR =ARR;
 	   //// if upcounting
-	 if(OC1M==PWM_MODE1) {
-	TIM2_CCR1 = (dutey*0.01)*(ARR+1);     /// 0.01 indicat that it is float
+	 if(OC1M==PWM_MODE1)  // based on what mode I chose
+	 {
+	TIM2_CCR1 = (dutey*0.01)*(ARR+1);     /// Dutey cycle= CCR/(ARR+1) 0.01 indicat that it is float I multiply by 100 becuse user will give me the dutey as value from 0 to 100
 	 } else if (OC1M==PWM_MODE2)
 	 {
 		 TIM2_CCR1 = (1- (100/dutey))*(ARR+1);  //Dutey cycle= 1-CCR/(ARR+1)   // the prcentage of the signal that is high from all the period

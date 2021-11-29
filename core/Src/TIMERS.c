@@ -14,9 +14,25 @@
 
 	 TIM2_PSC= PSC_VALUE;                                                     //// Set the desired prescaler
 
-     while(!(TIM2_SR&(1<<UIF_OFFSET)));     ////! is general true or fales not a bit operation this is very important to make sure that registers got the new values.
-                                                   // it give me an error and it took me while to figure it out
 
+	 /*
+	  * /*
+Bit 0 UG: Update generation
+This bit can be set by software, it is automatically cleared by hardware.
+0: No action
+1: Re-initialize the counter and generates an update of the registers. Note that the prescaler
+counter is cleared too (anyway the prescaler ratio is not affected). The counter is cleared if
+the center-aligned mode is selected or if DIR=0 (upcounting), else it takes the auto-reload
+value (TIMx_ARR) if DIR=1 (downcounting).*/
+
+	TIM2_EGR=(((TIM2_EGR ) &(~(0b1<<UG_OFFSET ))) |( 1<<UG_OFFSET )) ; //  without this line the register will not be updated until an overflow or underflow happen
+	                                                                   //than UIF will be set and the registers will be updated
+
+     while(!(TIM2_SR&(1<<UIF_OFFSET)));     //// ! is general true or false not a bit operation this is very important to make sure that registers got the new values.
+                                                   // it give me an error and it took me while to figure it out
+     TIM2_SR=((TIM2_SR) &(~(0b1<<UIF_OFFSET)));  //clear the UIF flag
+
+     //
   }
 
 
@@ -43,7 +59,14 @@
 
 	 TIM4_PSC= PSC_time4_VALUE;
 
+	 TIM4_EGR=(((TIM4_EGR ) &(~(0b1<<UG_OFFSET ))) |( 1<<UG_OFFSET )) ; //  without this line the register will not be updated until an overflow or underflow happen
+	 	                                                                   //than UIF will be set and the registers will be updated
+
+
     while(!(TIM4_SR&(1<<UIF_OFFSET)));      ////! is general true or fales not a bit operation
+
+    TIM4_SR=((TIM4_SR) &(~(0b1<<UIF_OFFSET)));  //clear the UIF flag
+
 
   }
 

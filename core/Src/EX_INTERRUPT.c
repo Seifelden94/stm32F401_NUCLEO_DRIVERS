@@ -1,7 +1,7 @@
 
 #include "INTERRUPT.h"
-#include "DIO.h"
-#include "stm32f4xx.h"
+//#include "DIO.h"
+ #include "stm32f4xx.h"
 ////
 /*
 The input parameter IRQn is the IRQ number, see Table 17: Properties of the different
@@ -212,7 +212,7 @@ void choose_interrupt_pins(int port_name, int pin_number, int rising_falling_or_
 
 
    case 0 :
-	         SYSCFG_EXTICR1 = ((SYSCFG_EXTICR1  ) &(~(0b1111<<(pin_number*4)))) |(port_name <<(pin_number*4) );
+	         SYSCFG_EXTICR1 = ((SYSCFG_EXTICR1  ) &(~(0b1111<<(pin_number*4)))) |(port_name <<(pin_number*4) );  /// based on the port name I will decide what interrupt will happen so  0000 if PA, 0001 if PB and the rest is in data sheet
 	         NVIC_EnableIRQ(EXTI0_IRQn);
 	         NVIC_SetPriority(EXTI0_IRQn,priority);
 	     break;

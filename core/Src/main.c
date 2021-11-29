@@ -42,21 +42,38 @@
    clock_initialization() ;
 
    dio_intialise();
-   GPIO_pullup_down(GPIOA,PIN0,  PULLUP);
+   //GPIO_pullup_down(GPIOA,PIN0,  PULLUP);
    GPIO_pullup_down(GPIOA,PIN2,  PULLDOWN);
    GPIO_pullup_down(GPIOA,PIN3,  PULLUP);
-   GPIO_pullup_down(GPIOA,PIN6,  PULLUP);
+   GPIO_pullup_down(GPIOA,PIN6,  PULLUP);  /// I intialised for external interrupt
    GPIO_pullup_down(GPIOA,PIN8,  PULLUP);
-//  timer2_initi();
- timer4_initi();
- external_interrupt_init();
+ // timer2_initi();
+timer4_initi();
+ //external_interrupt_init();
+// time2_interrupt_intialise();
 
 //NVIC_SetPriority(EXTI1_IRQn,1);
 //EXTI1_IRQn;
+// time2_interrupt_msecond(100);
+
+ pwm_time2_edge_intialise();
+ pwm_frequency_deuty_edge(1, 100);
+pwm_interrupt_enable();
     while(1)
 
      {
-      x=GPIO_read_bit(GPIOA,PIN2);
+
+
+         for(int x=0; x<=100; x++)
+         {
+    	pwm_frequency_deuty_edge(x, 100);
+
+    	delaytime4_msec(100);
+
+
+         }
+
+   //   x=GPIO_read_bit(GPIOA,PIN2);
      // set_GPIO_bit_atomic(GPIOA,PIN5);
 
  // set_GPIO_bit_atomic(GPIOA,PIN5);
@@ -70,7 +87,8 @@
     	  clear_GPIO_bit_atomic(GPIOA,PIN5);
       }*/
 
-   delaytime4_msec(1000);
+ //  GPIO_toggle_atomic( GPIOA, PIN5  );
+  // delaytime2_msec(5000);
 
 
 
